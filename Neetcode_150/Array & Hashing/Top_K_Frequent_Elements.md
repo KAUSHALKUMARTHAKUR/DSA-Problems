@@ -1,10 +1,8 @@
 # Top K Frequent Elements
 
 ## ✅ Problem Description
-Given an integer array `nums` and an integer `k`, return the **k most frequent elements** in the array.
-
-You may return the output in any order.  
-The answer is always **unique**.
+Given an integer array `nums` and an integer `k`, return the **k most frequent elements** in any order.  
+The answer is always unique.
 
 ---
 
@@ -27,36 +25,26 @@ nums = [7,7], k = 1
 ## ✅ Constraints
 - 1 ≤ nums.length ≤ 10⁴  
 - -1000 ≤ nums[i] ≤ 1000  
-- 1 ≤ k ≤ number of distinct elements in nums  
+- k ≤ number of distinct elements  
 
 ---
 
 # ✅ Approach 1 — Max-Heap (Priority Queue)
 
-### **Steps**
-1. Count the frequency of each element using `unordered_map`.  
-2. Use a **max-heap** to store `{number, frequency}`.  
-3. Extract the top `k` most frequent elements.
-
----
+### ✅ Intuition
+- Count frequency of each number.
+- Push `{num, freq}` into a **max-heap**.
+- Extract top `k` frequent elements.
 
 ### ✅ Time Complexity
-- Counting frequencies → **O(n)**  
-- Building heap → **O(n log n)**  
-- Extracting k elements → **O(k log n)**  
-
-✅ **Overall: O(n log n)**
+**O(n log n)**  
+(Heap operations)
 
 ### ✅ Space Complexity
-- Hash map → **O(n)**  
-- Heap → **O(n)**  
+**O(n)**  
+(Hash map + heap)
 
-✅ **Total: O(n)**
-
----
-
-## ✅ C++ Code — Max Heap Approach
-
+### ✅ C++ Code
 ```cpp
 class Solution {
 public:
@@ -93,31 +81,21 @@ public:
 
 # ✅ Approach 2 — Sorting Using Vector of Pairs
 
-### **Steps**
-1. Count frequencies using `unordered_map`.  
-2. Push `{number, frequency}` into a vector.  
-3. Sort the vector in **descending order of frequency**.  
-4. Take the first `k` elements.
-
----
+### ✅ Intuition
+- Count frequencies.
+- Store `{num, freq}` in a vector.
+- Sort by frequency (descending).
+- Take first `k` elements.
 
 ### ✅ Time Complexity
-- Counting frequencies → **O(n)**  
-- Building vector of unique elements → **O(n)**  
-- Sorting → **O(n log n)**  
-
-✅ **Overall: O(n log n)**
+**O(n log n)**  
+(Sorting dominates)
 
 ### ✅ Space Complexity
-- Hash map → **O(n)**  
-- Vector of pairs → **O(n)**  
+**O(n)**  
+(Map + vector)
 
-✅ **Total: O(n)**
-
----
-
-## ✅ C++ Code — Sorting Approach
-
+### ✅ C++ Code
 ```cpp
 class Solution {
 public:
@@ -151,15 +129,75 @@ public:
 
 ---
 
-# ✅ Summary
+# ✅ Approach 3 — Bucket Sort (Optimal O(n) Solution)
+
+### ✅ Intuition
+- Maximum possible frequency is `n`.
+- Create buckets: `freq[i]` contains all numbers with frequency `i`.
+- Traverse from highest freq to lowest and collect top `k` elements.
+
+### ✅ Time Complexity
+✅ **O(n)**  
+- Counting: O(n)  
+- Bucket creation: O(n)  
+- Collecting k elements: ≤ O(n)
+
+### ✅ Space Complexity
+✅ **O(n)**  
+- Map + bucket array
+
+### ✅ C++ Code
+```cpp
+class Solution {
+public:
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        int n = nums.size();
+        unordered_map<int,int> mp;
+
+        vector<vector<int>> freq(n + 1);
+
+        // Count frequencies
+        for (int x : nums) {
+            mp[x]++;
+        }
+
+        // Insert numbers into buckets
+        for (auto &it : mp) {
+            freq[it.second].push_back(it.first);
+        }
+
+        vector<int> result;
+
+        // Traverse buckets from high freq to low freq
+        for (int i = n; i >= 1; i--) {
+            for (int num : freq[i]) {
+                result.push_back(num);
+                if (result.size() == k) {
+                    return result;
+                }
+            }
+        }
+
+        return result;
+    }
+};
+```
+
+---
+
+# ✅ Summary of All Approaches
 
 | Approach | Time Complexity | Space Complexity | Notes |
-|---------|-----------------|------------------|-------|
-| **Max-Heap** | O(n log n) | O(n) | Efficient, widely used |
-| **Sorting** | O(n log n) | O(n) | Simpler logic, easy to write |
+|----------|------------------|-------------------|--------|
+| **Max-Heap** | O(n log n) | O(n) | Simple & commonly used |
+| **Sorting** | O(n log n) | O(n) | Easy to write |
+| **Bucket Sort** | ✅ O(n) | O(n) | **Best optimal solution** |
 
-✅ Both are acceptable and efficient.  
-✅ For strict **O(n)** solution, Bucket Sort is used (optional).  
+---
+
+# ✅ Final Recommendation
+Use **Bucket Sort** (Approach 3) when optimal performance is needed.  
+Use **Heap** or **Sorting** for simpler code or interviews where clarity matters.
 
 ---
 
